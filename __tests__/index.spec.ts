@@ -1,4 +1,4 @@
-import { Subject } from "rxjs";
+import { lastValueFrom, Subject } from "rxjs";
 import { take, toArray } from "rxjs/operators";
 import { v4 as uuid } from "uuid";
 
@@ -172,7 +172,7 @@ describe("createMainChannelFromSockets", () => {
 
     const messages = [{ a: 1 }, { a: 2 }, { b: 3 }];
 
-    const p = channels.pipe(take(messages.length), toArray()).toPromise();
+    const p = lastValueFrom(channels.pipe(take(messages.length), toArray()));
 
     for (const message of messages) {
       hokeySocket.emit("message", message);
@@ -195,7 +195,7 @@ describe("createMainChannelFromSockets", () => {
 
     const channels = createMainChannelFromSockets(sockets);
 
-    const p = channels.pipe(take(2), toArray()).toPromise();
+    const p = lastValueFrom(channels.pipe(take(2), toArray()));
 
     shellSocket.emit("message", { yolo: false });
     iopubSocket.emit("message", { yolo: true });
@@ -221,7 +221,7 @@ describe("createMainChannelFromSockets", () => {
       username: "dj"
     });
 
-    const responses = channels.pipe(take(2), toArray()).toPromise();
+    const responses = lastValueFrom(channels.pipe(take(2), toArray()));
 
     channels.next({ channel: "shell" } as JupyterMessage<any>);
 
